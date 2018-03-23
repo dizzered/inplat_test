@@ -24,7 +24,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'approve', 'create', 'update', 'delete'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -34,8 +34,17 @@ class SiteController extends Controller
 	                [
 		                'actions' => ['approve'],
 		                'allow' => true,
+		                'roles' => ['@'],
 		                'matchCallback' => function () {
 			                return Yii::$app->user->identity->role_id == 2;
+		                }
+	                ],
+	                [
+		                'actions' => ['create', 'update', 'delete'],
+		                'allow' => true,
+		                'roles' => ['@'],
+		                'matchCallback' => function () {
+			                return Yii::$app->user->identity->role_id == 1;
 		                }
 	                ],
                 ],

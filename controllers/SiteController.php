@@ -180,16 +180,23 @@ class SiteController extends Controller
 	 * @param $id
 	 *
 	 * @return Response
-	 * @throws Exception
-	 * @throws NotFoundHttpException
 	 * @throws \Throwable
-	 * @throws \yii\db\StaleObjectException
+	 * @throws \yii\db\Exception
 	 */
 	public function actionDelete($id)
 	{
-		$this->findModel($id)->delete();
+		$transaction = Yii::$app->db->beginTransaction();
+		try {
+			$this->findModel($id)->delete();
+			$transaction->commit();
+		} catch (Exception $e) {
+			$transaction->rollBack();
+			
+			echo '<pre>' . print_r($e, true);
+			exit;
+		}
 		
-		return $this->redirect(['index']);
+		return $this->goHome();
 	}
 	
     /**
